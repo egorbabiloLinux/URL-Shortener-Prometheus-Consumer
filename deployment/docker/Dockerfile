@@ -5,7 +5,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY . . 
+COPY . .
 
 RUN go build -o prometheus-consumer ./cmd/main.go
 
@@ -15,6 +15,8 @@ WORKDIR /app
 
 COPY --from=builder /app/prometheus-consumer .
 COPY ./internal/config ./config
+COPY ./internal/kafka/pem ./certs
+COPY ./tests ./tests
 
 EXPOSE 8090
 
