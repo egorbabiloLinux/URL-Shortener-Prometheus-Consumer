@@ -31,15 +31,19 @@ func main() {
 	if err != nil {
 		log.Error("failed to create consumer", sl.Err(err))
 	}
+	defer c.Close()
+	log.Info("kafka consumer created")
 
 	metrics.Register()
 
 	srv := http.NewServeMux()
 	srv.Handle("/metrics", promhttp.Handler())
 
-	if err := http.ListenAndServe(":8090", srv); err != nil {
-		log.Error("unable to start server", sl.Err(err))
-	}
+	go func() {
+		if err := http.ListenAndServe(":8090", srv); err != nil {
+			log.Error("unable to start server", sl.Err(err))
+		}
+	}()
 
 	signchan := make(chan os.Signal, 1)
 	signal.Notify(signchan, syscall.SIGINT, syscall.SIGTERM)
@@ -60,8 +64,6 @@ func main() {
 			metrics.AuthCounter.WithLabelValues(string(ev.Key)).Inc()
 		}
 	}
-
-	c.Close()
 }
 
 func setupLogger(env string) *slog.Logger {

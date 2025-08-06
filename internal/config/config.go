@@ -16,10 +16,9 @@ type Config struct {
 	AutoOffsetReset 			 string   `mapstructure:"auto_offset_reset" validate:"required"`
 	SASLUsername 				 string   `mapstructure:"sasl_username" validate:"required"`
 	SASLPassword 				 string   `mapstructure:"sasl_password" validate:"required"`
-	SSLKeystoreLocation 		 string   `mapstructure:"ssl_keystore_location" validate:"required"`
-	SSLKeystorePassword 		 string   `mapstructure:"ssl_keystore_password" validate:"required"`
-	SSLTruststoreLocation 		 string   `mapstructure:"ssl_truststore_location" validate:"required"`
-	SSLTruststorePassword 		 string   `mapstructure:"ssl_truststore_password" validate:"required"`
+	SSLKeyLocation 		 		 string   `mapstructure:"ssl_key_location" validate:"required"`
+	SSLCertificateLocation 		 string   `mapstructure:"ssl_certificate_location" validate:"required"`
+	SSLCaLocation		 		 string   `mapstructure:"ssl_ca_location" validate:"required"`
 	SSLEndpointIdentificationAlg string   `mapstructure:"ssl_endpoint_identification_algorithm"`
 	Topics 						 []string `mapstructure:"topics" validate:"required,dive,required"`
 }
@@ -36,14 +35,12 @@ func (c Config) Get(key string) (string, bool) {
 		return c.SASLUsername, true
 	case "sasl.password":
 		return c.SASLPassword, true
-	case "ssl.keystore.location":
-		return c.SSLKeystoreLocation, true
-	case "ssl.keystore.password":
-		return c.SSLKeystorePassword, true
-	case "ssl.truststore.location":
-		return c.SSLTruststoreLocation, true
-	case "ssl.truststore.password":
-		return c.SSLTruststorePassword, true
+	case "ssl.key.location":
+		return c.SSLKeyLocation, true
+	case "ssl.certificate.location":
+		return c.SSLCertificateLocation, true
+	case "ssl.ca.location":
+		return c.SSLCaLocation, true
 	case "ssl.endpoint.identification.algorithm":
 		if c.SSLEndpointIdentificationAlg == "" {
 			return c.SSLEndpointIdentificationAlg, true
@@ -55,10 +52,9 @@ func (c Config) Get(key string) (string, bool) {
 }
 
 func MustLoad() *Config {
-	err := godotenv.Load("deployment/docker/.env")
-
+	err := godotenv.Load("./config/.env")
 	if err != nil {
-		log.Println(".env file not found or failed to load, skipping")
+	 	log.Println(".env file not found or failed to load, skipping: " + err.Error())
 	}
 
 	v := viper.New()
@@ -88,11 +84,9 @@ func MustLoad() *Config {
 		"auto_offset_reset":           "KAFKA_AUTO_OFFSET_RESET",
 		"sasl_username":               "KAFKA_SASL_USERNAME",
 		"sasl_password":               "KAFKA_SASL_PASSWORD",
-		"ssl_keystore_location":       "KAFKA_SSL_KEYSTORE_LOCATION",
-		"ssl_keystore_password":       "KAFKA_SSL_KEYSTORE_PASSWORD",
-		"ssl_truststore_location":     "KAFKA_SSL_TRUSTSTORE_LOCATION",
-		"ssl_truststore_password":     "KAFKA_SSL_TRUSTSTORE_PASSWORD",
-		"ssl_endpoint_identification_algorithm": "KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM",
+		"ssl_key_location":       	   "KAFKA_SSL_KEY_LOCATION",
+		"ssl_certificate_location":    "KAFKA_SSL_CERTIFICATE_LOCATION",
+		"ssl_ca_location":     		   "KAFKA_SSL_CA_LOCATION",
 		"topics":                      "TOPICS",
 	}
 

@@ -22,25 +22,22 @@ func NewConsumer(cfg ConsumerConfig, log *slog.Logger, topics ...string) (*Kafka
 	}
 
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
-	"bootstrap.servers":                    get("bootstrap.servers"),
-	"group.id":                             get("group.id"), 
-	"auto.offset.reset":                    get("auto.offset.reset"), 
+	"bootstrap.servers":        get("bootstrap.servers"),
+	"group.id":                 get("group.id"), 
+	"auto.offset.reset":        get("auto.offset.reset"), 
 
-	"security.protocol":                    "SASL_SSL",
-	"sasl.mechanisms":                      "PLAIN",
-	"sasl.username":                        get("sasl.username"),
-	"sasl.password":                        get("sasl.password"),
+	"security.protocol":        "SASL_SSL",
+	"sasl.mechanisms":          "PLAIN",
+	"sasl.username":            get("sasl.username"),
+	"sasl.password":            get("sasl.password"),
 
-	"ssl.keystore.location":                get("ssl.keystore.location"),
-	"ssl.keystore.password":                get("ssl.keystore.password"),
-	"ssl.truststore.location":              get("ssl.truststore.location"),
-	"ssl.truststore.password":              get("ssl.truststore.password"),
-	"ssl.endpoint.identification.algorithm": get("ssl.endpoint.identification.algorithm"),
+	"ssl.key.location": 		get("ssl.key.location"),
+	"ssl.certificate.location": get("ssl.certificate.location"),
+	"ssl.ca.location": 			get("ssl.ca.location"),
 	})
 	if err != nil {
 		return nil, err
 	}
-	defer c.Close()
 
 	err = c.SubscribeTopics(topics, nil)
 	if err != nil {

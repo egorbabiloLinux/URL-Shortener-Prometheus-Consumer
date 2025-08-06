@@ -7,7 +7,7 @@ services:
     volumes:
       - ../prometheus/prometheus.yml:/etc/prometheus.yml
   
-  app:
+  prometheus-consumer-app:
     build:
       context: ../../
       dockerfile: deployment/docker/Dockerfile
